@@ -1,10 +1,17 @@
-function make_chart(identifier, data) {
+function make_chart(identifier, data, data2) {
   let container = document.createElement("div");
   container.id = identifier;
   document.body.append(container);
 
+  if (Object.keys(data).length !== Object.keys(data2).length) {
+    container.innerText = "Not the same values for " + identifier;
+    console.log(data, data2);
+    return;
+  }
+
   let catagories = Object.keys(data);
   let bars = Object.values(data);
+  let bars2 = Object.values(data2);
 
   // Toggle between using boxplot and errorbar depending on 
   // how many values we have.
@@ -14,6 +21,7 @@ function make_chart(identifier, data) {
       kind = 'errorbar'
     }
   }
+
   if (kind == 'errorbar') {
     for (let bar_idx in bars) {
       let bar = bars[bar_idx];
@@ -23,6 +31,8 @@ function make_chart(identifier, data) {
       ];
     }
   }
+
+  let bart
 
   Highcharts.chart(identifier, {
     chart: {
@@ -61,16 +71,23 @@ function make_chart(identifier, data) {
         pointFormat: '<span style="font-weight: bold; color: {series.color}">{series.name}</span>: <b>{point.y:.1f} mm</b> '
       }
     },*/ {
-      name: 'error',
+      name: 'before-error',
       type: kind,
       animation: false,
       color: "#ff0000",
       yAxis: 0,
       data: bars,
+    }, {
+      name: 'error-after',
+      type: kind,
+      animation: false,
+      color: "#0000ff",
+      yAxis: 0,
+      data: bars2,
     }]
   });
 }
 
 for (let title in data) {
-  make_chart(title, data[title]);
+  make_chart(title, data[title], data2[title]);
 }
